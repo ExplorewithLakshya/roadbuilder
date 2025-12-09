@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoadBuilder.io - Multiplayer Road Building Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .game-header {
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0f3460;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4cc9f0;
+        }
+        
+        .logo i {
+            color: #f72585;
+        }
+        
+        .player-info {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .info-box {
+            background-color: rgba(15, 52, 96, 0.7);
+            padding: 8px 15px;
+            border-radius: 8px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #a9b7c6;
+            margin-bottom: 3px;
+        }
+        
+        .info-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #4cc9f0;
+        }
+        
+        .score-value {
+            color: #f72585;
+        }
+        
+        .game-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .game-sidebar {
+            width: 280px;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #0f3460;
+            overflow-y: auto;
+        }
+        
+        .game-canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d1b2a;
+        }
+        
+        .mini-map {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 150px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4cc9f0;
+            border-radius: 5px;
+            z-index: 50;
+            overflow: hidden;
+        }
+        
+        #miniMapCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #4cc9f0;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #0f3460;
+        }
+        
+        .controls-list {
+            margin-bottom: 25px;
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(15, 52, 96, 0.3);
+            border-radius: 5px;
+        }
+        
+        .control-key {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            border: 1px solid #4cc9f0;
+        }
+        
+        .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .upgrade-item {
+            background-color: rgba(15, 52, 96, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .upgrade-item:hover {
+            background-color: rgba(79, 120, 173, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .upgrade-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .upgrade-item.disabled:hover {
+            background-color: rgba(15, 52, 96, 0.5);
+            transform: none;
+        }
+        
+        .upgrade-cost {
+            color: #f72585;
+            font-weight: 600;
+        }
+        
+        .upgrade-name {
+            font-weight: 600;
+        }
+        
+        .upgrade-level {
+            color: #a9b7c6;
+            font-size: 0.9rem;
+        }
+        
+        .leaderboard {
+            margin-top: auto;
+        }
+        
+        .leaderboard-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: rgba(15, 52, 96, 0.3);
+            border-radius: 5px;
+        }
+        
+        .leaderboard-item.you {
+            background-color: rgba(79, 120, 173, 0.5);
+            border-left: 3px solid #f72585;
+        }
+        
+        .player-rank {
+            color: #f72585;
+            font-weight: 600;
+            width: 25px;
+        }
+        
+        .player-name {
+            flex: 1;
+        }
+        
+        .player-score {
+            color: #4cc9f0;
+            font-weight: 600;
+        }
+        
+        .game-notification {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(15, 52, 96, 0.9);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        .game-notification.show {
+            opacity: 1;
+        }
+        
+        .road-color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+        }
+        
+        .player-road-color {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .instructions {
+            font-size: 0.9rem;
+            color: #a9b7c6;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 60;
+        }
+        
+        .mobile-joystick {
+            width: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            position: relative;
+            touch-action: none;
+        }
+        
+        .mobile-joystick-handle {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(79, 120, 173, 0.8);
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            left: 25px;
+        }
+        
+        .mobile-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .mobile-button {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(79, 120, 173, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        @media (max-width: 1024px) {
+            .game-sidebar {
+                width: 220px;
+                padding: 15px;
+            }
+            
+            .mini-map {
+                width: 150px;
+                height: 120px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .game-sidebar {
+                width: 100%;
+                height: 200px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                overflow-x: auto;
+                border-right: none;
+                border-bottom: 2px solid #0f3460;
+            }
+            
+            .sidebar-section {
+                min-width: 200px;
+                margin-right: 20px;
+            }
+            
+            .leaderboard {
+                margin-top: 0;
+            }
+            
+            .mobile-controls {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .player-info {
+                gap: 10px;
+            }
+            
+            .info-box {
+                min-width: 90px;
+                padding: 5px 10px;
+            }
+            
+            .info-value {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-sidebar {
+                height: 160px;
+            }
+            
+            .sidebar-section {
+                min-width: 160px;
+            }
+            
+            .mini-map {
+                width: 100px;
+                height: 80px;
+                bottom: 120px;
+                right: 10px;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <div class="logo">
+            <i class="fas fa-road"></i>
+            <span>RoadBuilder.io</span>
+        </div>
+        
+        <div class="player-info">
+            <div class="info-box">
+                <div class="info-label">SCORE</div>
+                <div class="info-value score-value" id="score">0</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">ROAD LENGTH</div>
+                <div class="info-value" id="roadLength">0</div>
+            </div>
+            <div class="info-box">
+                <div class="info-label">COINS</div>
+                <div class="info-value" id="coins">100</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="game-container">
+        <div class="game-sidebar">
+            <div class="sidebar-section">
+                <div class="section-title">Player Info</div>
+                <div class="player-road-color">
+                    <div class="road-color-indicator" id="playerColor"></div>
+                    <div>Your Road Color</div>
+                </div>
+                <div class="instructions">
+                    Build the longest road network to earn points. Avoid obstacles and other players' roads!
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Controls</div>
+                <div class="controls-list">
+                    <div class="control-item">
+                        <span>Move</span>
+                        <span class="control-key">WASD / Arrows</span>
+                    </div>
+                    <div class="control-item">
+                        <span>Build Road</span>
+                        <span class="control-key">SPACE</span>
+                    </div>
+                    <div class="control-item">
+                        <span>Boost</span>
+                        <span class="control-key">SHIFT</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Upgrades</div>
+                <div class="upgrades-list">
+                    <div class="upgrade-item" id="upgradeSpeed">
+                        <div>
+                            <div class="upgrade-name">Speed Boost</div>
+                            <div class="upgrade-level">Level <span id="speedLevel">1</span></div>
+                        </div>
+                        <div class="upgrade-cost">50 coins</div>
+                    </div>
+                    <div class="upgrade-item" id="upgradeRoadWidth">
+                        <div>
+                            <div class="upgrade-name">Road Width</div>
+                            <div class="upgrade-level">Level <span id="widthLevel">1</span></div>
+                        </div>
+                        <div class="upgrade-cost">75 coins</div>
+                    </div>
+                    <div class="upgrade-item" id="upgradeCoinMultiplier">
+                        <div>
+                            <div class="upgrade-name">Coin Multiplier</div>
+                            <div class="upgrade-level">Level <span id="multiplierLevel">1</span></div>
+                        </div>
+                        <div class="upgrade-cost">100 coins</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-section leaderboard">
+                <div class="section-title">Leaderboard</div>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard items will be added here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            <div class="mini-map">
+                <canvas id="miniMapCanvas"></canvas>
+            </div>
+            
+            <div class="game-notification" id="notification">
+                Welcome to RoadBuilder.io!
+            </div>
+            
+            <div class="mobile-controls">
+                <div class="mobile-joystick" id="joystick">
+                    <div class="mobile-joystick-handle"></div>
+                </div>
+                <div class="mobile-buttons">
+                    <div class="mobile-button" id="buildButton">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <div class="mobile-button" id="boostButton">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const miniMapCanvas = document.getElementById('miniMapCanvas');
+        const miniMapCtx = miniMapCanvas.getContext('2d');
+        
+        // Game state
+        let gameRunning = true;
+        let score = 0;
+        let roadLength = 0;
+        let coins = 100;
+        let player = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 15,
+            speed: 3,
+            roadWidth: 8,
+            color: getRandomColor(),
+            direction: 0,
+            isBuilding: false,
+            boost: 1,
+            boostCharge: 100,
+            maxBoost: 100
+        };
+        
+        // Game objects
+        let roads = [];
+        let obstacles = [];
+        let coinsOnMap = [];
+        let otherPlayers = [];
+        let particles = [];
+        
+        // Game settings
+        const gameSettings = {
+            worldWidth: 4000,
+            worldHeight: 4000,
+            coinMultiplier: 1,
+            roadCost: 0.1,
+            coinValue: 1
+        };
+        
+        // Upgrades
+        const upgrades = {
+            speed: { level: 1, cost: 50, value: 0.5 },
+            roadWidth: { level: 1, cost: 75, value: 1 },
+            coinMultiplier: { level: 1, cost: 100, value: 0.2 }
+        };
+        
+        // Leaderboard (simulated players)
+        let leaderboard = [
+            { name: "RoadMaster", score: 24500, color: "#ff0000" },
+            { name: "HighwayKing", score: 18900, color: "#00ff00" },
+            { name: "AsphaltPro", score: 15600, color: "#0000ff" },
+            { name: "You", score: 0, color: player.color },
+            { name: "RoadRacer", score: 9800, color: "#ffff00" },
+            { name: "PathFinder", score: 7600, color: "#ff00ff" },
+            { name: "TrailBlazer", score: 5400, color: "#00ffff" }
+        ];
+        
+        // Input handling
+        const keys = {};
+        const mouse = { x: 0, y: 0, down: false };
+        
+        // Initialize game
+        function init() {
+            // Set canvas dimensions
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Set player color indicator
+            document.getElementById('playerColor').style.backgroundColor = player.color;
+            
+            // Initialize game objects
+            generateInitialRoad();
+            generateObstacles(30);
+            generateCoins(50);
+            generateOtherPlayers(6);
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Update UI
+            updateUI();
+            updateLeaderboard();
+            
+            // Start game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Keyboard controls
+            window.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                
+                // Spacebar to build road
+                if (e.key === ' ' && !e.repeat) {
+                    player.isBuilding = true;
+                }
+                
+                // Prevent spacebar from scrolling page
+                if (e.key === ' ') {
+                    e.preventDefault();
+                }
+            });
+            
+            window.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+                
+                if (e.key === ' ') {
+                    player.isBuilding = false;
+                }
+            });
+            
+            // Mouse controls
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+            
+            canvas.addEventListener('mousedown', () => {
+                mouse.down = true;
+                player.isBuilding = true;
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                mouse.down = false;
+                player.isBuilding = false;
+            });
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = touch.clientX - rect.left;
+                mouse.y = touch.clientY - rect.top;
+                mouse.down = true;
+                player.isBuilding = true;
+            });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = touch.clientX - rect.left;
+                mouse.y = touch.clientY - rect.top;
+            });
+            
+            canvas.addEventListener('touchend', () => {
+                mouse.down = false;
+                player.isBuilding = false;
+            });
+            
+            // Upgrade buttons
+            document.getElementById('upgradeSpeed').addEventListener('click', () => {
+                buyUpgrade('speed');
+            });
+            
+            document.getElementById('upgradeRoadWidth').addEventListener('click', () => {
+                buyUpgrade('roadWidth');
+            });
+            
+            document.getElementById('upgradeCoinMultiplier').addEventListener('click', () => {
+                buyUpgrade('coinMultiplier');
+            });
+            
+            // Mobile controls
+            const joystick = document.getElementById('joystick');
+            const joystickHandle = joystick.querySelector('.mobile-joystick-handle');
+            const buildButton = document.getElementById('buildButton');
+            const boostButton = document.getElementById('boostButton');
+            
+            let joystickActive = false;
+            let joystickCenterX = 0;
+            let joystickCenterY = 0;
+            let joystickRadius = 50;
+            
+            joystick.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                joystickActive = true;
+                const rect = joystick.getBoundingClientRect();
+                joystickCenterX = rect.left + joystickRadius;
+                joystickCenterY = rect.top + joystickRadius;
+                updateJoystick(e.touches[0]);
+            });
+            
+            joystick.addEventListener('touchmove', (e) => {
+                if (joystickActive) {
+                    e.preventDefault();
+                    updateJoystick(e.touches[0]);
+                }
+            });
+            
+            joystick.addEventListener('touchend', () => {
+                joystickActive = false;
+                joystickHandle.style.top = '25px';
+                joystickHandle.style.left = '25px';
+                keys['arrowleft'] = false;
+                keys['arrowright'] = false;
+                keys['arrowup'] = false;
+                keys['arrowdown'] = false;
+            });
+            
+            function updateJoystick(touch) {
+                const touchX = touch.clientX;
+                const touchY = touch.clientY;
+                
+                const deltaX = touchX - joystickCenterX;
+                const deltaY = touchY - joystickCenterY;
+                
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const angle = Math.atan2(deltaY, deltaX);
+                
+                if (distance < joystickRadius) {
+                    joystickHandle.style.left = `${25 + deltaX}px`;
+                    joystickHandle.style.top = `${25 + deltaY}px`;
+                } else {
+                    const limitedX = Math.cos(angle) * joystickRadius;
+                    const limitedY = Math.sin(angle) * joystickRadius;
+                    joystickHandle.style.left = `${25 + limitedX}px`;
+                    joystickHandle.style.top = `${25 + limitedY}px`;
+                }
+                
+                // Set direction based on joystick position
+                keys['arrowleft'] = deltaX < -15;
+                keys['arrowright'] = deltaX > 15;
+                keys['arrowup'] = deltaY < -15;
+                keys['arrowdown'] = deltaY > 15;
+            }
+            
+            buildButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                player.isBuilding = true;
+            });
+            
+            buildButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                player.isBuilding = false;
+            });
+            
+            boostButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys['shift'] = true;
+            });
+            
+            boostButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys['shift'] = false;
+            });
+        }
+        
+        // Resize canvas to fit window
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            miniMapCanvas.width = document.querySelector('.mini-map').clientWidth;
+            miniMapCanvas.height = document.querySelector('.mini-map').clientHeight;
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate camera position (centered on player)
+            const cameraX = player.x - canvas.width / 2;
+            const cameraY = player.y - canvas.height / 2;
+            
+            // Handle input
+            handleInput();
+            
+            // Update player
+            updatePlayer();
+            
+            // Update game objects
+            updateRoads();
+            updateCoins();
+            updateObstacles();
+            updateOtherPlayers();
+            updateParticles();
+            
+            // Draw game objects
+            drawRoads(cameraX, cameraY);
+            drawObstacles(cameraX, cameraY);
+            drawCoins(cameraX, cameraY);
+            drawOtherPlayers(cameraX, cameraY);
+            drawParticles(cameraX, cameraY);
+            drawPlayer(cameraX, cameraY);
+            
+            // Draw minimap
+            drawMiniMap();
+            
+            // Update UI
+            updateUI();
+            
+            // Continue game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Handle player input
+        function handleInput() {
+            // Movement
+            let moveX = 0;
+            let moveY = 0;
+            
+            if (keys['w'] || keys['arrowup']) moveY -= 1;
+            if (keys['s'] || keys['arrowdown']) moveY += 1;
+            if (keys['a'] || keys['arrowleft']) moveX -= 1;
+            if (keys['d'] || keys['arrowright']) moveX += 1;
+            
+            // Normalize diagonal movement
+            if (moveX !== 0 && moveY !== 0) {
+                moveX *= 0.7071; // 1 / sqrt(2)
+                moveY *= 0.7071;
+            }
+            
+            // Apply boost if shift is pressed and boost is available
+            let currentSpeed = player.speed;
+            if ((keys['shift'] || keys['shiftright']) && player.boostCharge > 0) {
+                currentSpeed *= 1.8;
+                player.boostCharge = Math.max(0, player.boostCharge - 1.5);
+                
+                // Create boost particles
+                if (Math.random() < 0.3) {
+                    createParticles(player.x, player.y, player.color, 2);
+                }
+            } else if (player.boostCharge < player.maxBoost) {
+                player.boostCharge = Math.min(player.maxBoost, player.boostCharge + 0.5);
+            }
+            
+            player.x += moveX * currentSpeed;
+            player.y += moveY * currentSpeed;
+            
+            // Keep player within world bounds
+            player.x = Math.max(player.radius, Math.min(gameSettings.worldWidth - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(gameSettings.worldHeight - player.radius, player.y));
+            
+            // Update direction based on movement
+            if (moveX !== 0 || moveY !== 0) {
+                player.direction = Math.atan2(moveY, moveX);
+            }
+            
+            // Build road if building
+            if (player.isBuilding && coins >= gameSettings.roadCost) {
+                addRoadSegment();
+                coins -= gameSettings.roadCost;
+            }
+        }
+        
+        // Update player
+        function updatePlayer() {
+            // Check collision with obstacles
+            for (const obstacle of obstacles) {
+                const dx = player.x - obstacle.x;
+                const dy = player.y - obstacle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < player.radius + obstacle.radius) {
+                    // Push player away from obstacle
+                    const angle = Math.atan2(dy, dx);
+                    player.x += Math.cos(angle) * 2;
+                    player.y += Math.sin(angle) * 2;
+                    
+                    // Reduce score
+                    score = Math.max(0, score - 5);
+                    showNotification("Hit an obstacle! -5 points", "#f72585");
+                }
+            }
+            
+            // Check collision with other players
+            for (const other of otherPlayers) {
+                const dx = player.x - other.x;
+                const dy = player.y - other.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < player.radius + other.radius) {
+                    // Push players apart
+                    const angle = Math.atan2(dy, dx);
+                    player.x += Math.cos(angle) * 1.5;
+                    player.y += Math.sin(angle) * 1.5;
+                }
+            }
+        }
+        
+        // Add a road segment at player's position
+        function addRoadSegment() {
+            // Check if we should start a new road or continue existing one
+            if (roads.length === 0) {
+                roads.push({
+                    points: [{x: player.x, y: player.y}],
+                    color: player.color,
+                    width: player.roadWidth
+                });
+            } else {
+                const lastRoad = roads[roads.length - 1];
+                const lastPoint = lastRoad.points[lastRoad.points.length - 1];
+                
+                // Only add point if we've moved enough distance
+                const dx = player.x - lastPoint.x;
+                const dy = player.y - lastPoint.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 5) {
+                    lastRoad.points.push({x: player.x, y: player.y});
+                    roadLength += distance;
+                    
+                    // Increase score for building road
+                    score += Math.floor(distance * 0.1);
+                    
+                    // Check if we should create a coin
+                    if (Math.random() < 0.02) {
+                        generateCoin(player.x, player.y);
+                    }
+                    
+                    // Create road building particles
+                    if (Math.random() < 0.1) {
+                        createParticles(player.x, player.y, player.color, 1);
+                    }
+                }
+            }
+        }
+        
+        // Update roads
+        function updateRoads() {
+            // Nothing to update for roads currently
+        }
+        
+        // Update coins
+        function updateCoins() {
+            for (let i = coinsOnMap.length - 1; i >= 0; i--) {
+                const coin = coinsOnMap[i];
+                
+                // Check collision with player
+                const dx = player.x - coin.x;
+                const dy = player.y - coin.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < player.radius + coin.radius) {
+                    // Collect coin
+                    const coinValue = gameSettings.coinValue * gameSettings.coinMultiplier;
+                    coins += coinValue;
+                    score += Math.floor(coinValue * 10);
+                    
+                    // Show coin collection effect
+                    createParticles(coin.x, coin.y, "#FFD700", 5);
+                    showNotification(`+${coinValue} coins`, "#FFD700");
+                    
+                    // Remove coin
+                    coinsOnMap.splice(i, 1);
+                    
+                    // Generate new coin somewhere else
+                    generateCoin();
+                }
+            }
+        }
+        
+        // Update obstacles
+        function updateObstacles() {
+            // Obstacles don't move in this version
+        }
+        
+        // Update other players (simulated)
+        function updateOtherPlayers() {
+            for (const other of otherPlayers) {
+                // Simple AI: move in random direction, occasionally change
+                if (Math.random() < 0.02) {
+                    other.direction = Math.random() * Math.PI * 2;
+                }
+                
+                // Move
+                other.x += Math.cos(other.direction) * other.speed;
+                other.y += Math.sin(other.direction) * other.speed;
+                
+                // Bounce off world edges
+                if (other.x < other.radius || other.x > gameSettings.worldWidth - other.radius) {
+                    other.direction = Math.PI - other.direction;
+                }
+                if (other.y < other.radius || other.y > gameSettings.worldHeight - other.radius) {
+                    other.direction = -other.direction;
+                }
+                
+                // Occasionally build road
+                if (Math.random() < 0.1) {
+                    // Simulate road building for other players
+                    other.roadPoints.push({x: other.x, y: other.y});
+                    
+                    // Limit road points
+                    if (other.roadPoints.length > 50) {
+                        other.roadPoints.shift();
+                    }
+                }
+            }
+        }
+        
+        // Update particles
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 1;
+                
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+        
+        // Draw roads
+        function drawRoads(cameraX, cameraY) {
+            // Draw all roads
+            for (const road of roads) {
+                if (road.points.length < 2) continue;
+                
+                ctx.beginPath();
+                ctx.moveTo(road.points[0].x - cameraX, road.points[0].y - cameraY);
+                
+                for (let i = 1; i < road.points.length; i++) {
+                    ctx.lineTo(road.points[i].x - cameraX, road.points[i].y - cameraY);
+                }
+                
+                ctx.strokeStyle = road.color;
+                ctx.lineWidth = road.width;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+            }
+            
+            // Draw other players' roads
+            for (const other of otherPlayers) {
+                if (other.roadPoints.length < 2) continue;
+                
+                ctx.beginPath();
+                ctx.moveTo(other.roadPoints[0].x - cameraX, other.roadPoints[0].y - cameraY);
+                
+                for (let i = 1; i < other.roadPoints.length; i++) {
+                    ctx.lineTo(other.roadPoints[i].x - cameraX, other.roadPoints[i].y - cameraY);
+                }
+                
+                ctx.strokeStyle = other.color + "80"; // Add transparency
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+            }
+        }
+        
+        // Draw obstacles
+        function drawObstacles(cameraX, cameraY) {
+            for (const obstacle of obstacles) {
+                ctx.beginPath();
+                ctx.arc(obstacle.x - cameraX, obstacle.y - cameraY, obstacle.radius, 0, Math.PI * 2);
+                ctx.fillStyle = obstacle.color;
+                ctx.fill();
+                
+                // Draw obstacle pattern
+                ctx.beginPath();
+                ctx.arc(obstacle.x - cameraX, obstacle.y - cameraY, obstacle.radius * 0.7, 0, Math.PI * 2);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+        
+        // Draw coins
+        function drawCoins(cameraX, cameraY) {
+            for (const coin of coinsOnMap) {
+                // Draw coin
+                ctx.beginPath();
+                ctx.arc(coin.x - cameraX, coin.y - cameraY, coin.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#FFD700";
+                ctx.fill();
+                
+                // Draw coin shine
+                ctx.beginPath();
+                ctx.arc(coin.x - cameraX - coin.radius * 0.3, coin.y - cameraY - coin.radius * 0.3, coin.radius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = "#FFF8DC";
+                ctx.fill();
+                
+                // Draw coin symbol
+                ctx.fillStyle = "#B8860B";
+                ctx.font = `${coin.radius * 1.2}px Arial`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("$", coin.x - cameraX, coin.y - cameraY);
+                
+                // Animation: floating effect
+                coin.y += Math.sin(Date.now() * 0.003 + coin.x) * 0.1;
+            }
+        }
+        
+        // Draw other players
+        function drawOtherPlayers(cameraX, cameraY) {
+            for (const other of otherPlayers) {
+                // Draw player circle
+                ctx.beginPath();
+                ctx.arc(other.x - cameraX, other.y - cameraY, other.radius, 0, Math.PI * 2);
+                ctx.fillStyle = other.color;
+                ctx.fill();
+                
+                // Draw player outline
+                ctx.beginPath();
+                ctx.arc(other.x - cameraX, other.y - cameraY, other.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Draw player direction indicator
+                ctx.beginPath();
+                ctx.moveTo(other.x - cameraX, other.y - cameraY);
+                ctx.lineTo(
+                    other.x - cameraX + Math.cos(other.direction) * other.radius * 1.5,
+                    other.y - cameraY + Math.sin(other.direction) * other.radius * 1.5
+                );
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Draw player name
+                ctx.fillStyle = "#FFFFFF";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(other.name, other.x - cameraX, other.y - cameraY - other.radius - 10);
+            }
+        }
+        
+        // Draw particles
+        function drawParticles(cameraX, cameraY) {
+            for (const p of particles) {
+                ctx.beginPath();
+                ctx.arc(p.x - cameraX, p.y - cameraY, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / p.maxLife;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Draw player
+        function drawPlayer(cameraX, cameraY) {
+            // Draw player circle
+            ctx.beginPath();
+            ctx.arc(player.x - cameraX, player.y - cameraY, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = player.color;
+            ctx.fill();
+            
+            // Draw player outline
+            ctx.beginPath();
+            ctx.arc(player.x - cameraX, player.y - cameraY, player.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Draw player direction indicator
+            ctx.beginPath();
+            ctx.moveTo(player.x - cameraX, player.y - cameraY);
+            ctx.lineTo(
+                player.x - cameraX + Math.cos(player.direction) * player.radius * 1.5,
+                player.y - cameraY + Math.sin(player.direction) * player.radius * 1.5
+            );
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Draw boost indicator
+            if (player.boostCharge < player.maxBoost) {
+                const boostWidth = 60;
+                const boostHeight = 8;
+                const boostX = player.x - cameraX - boostWidth / 2;
+                const boostY = player.y - cameraY + player.radius + 15;
+                
+                // Boost background
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillRect(boostX, boostY, boostWidth, boostHeight);
+                
+                // Boost fill
+                const fillWidth = (player.boostCharge / player.maxBoost) * boostWidth;
+                ctx.fillStyle = player.boostCharge > 30 ? "#4cc9f0" : "#f72585";
+                ctx.fillRect(boostX, boostY, fillWidth, boostHeight);
+                
+                // Boost border
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(boostX, boostY, boostWidth, boostHeight);
+            }
+            
+            // Draw building indicator
+            if (player.isBuilding) {
+                ctx.beginPath();
+                ctx.arc(player.x - cameraX, player.y - cameraY, player.radius + 5, 0, Math.PI * 2);
+                ctx.strokeStyle = player.color + "80";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+        
+        // Draw minimap
+        function drawMiniMap() {
+            const width = miniMapCanvas.width;
+            const height = miniMapCanvas.height;
+            
+            // Clear minimap
+            miniMapCtx.fillStyle = "rgba(13, 27, 42, 0.9)";
+            miniMapCtx.fillRect(0, 0, width, height);
+            
+            // Calculate scale
+            const scaleX = width / gameSettings.worldWidth;
+            const scaleY = height / gameSettings.worldHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            // Draw roads on minimap
+            for (const road of roads) {
+                if (road.points.length < 2) continue;
+                
+                miniMapCtx.beginPath();
+                miniMapCtx.moveTo(road.points[0].x * scale, road.points[0].y * scale);
+                
+                for (let i = 1; i < road.points.length; i++) {
+                    miniMapCtx.lineTo(road.points[i].x * scale, road.points[i].y * scale);
+                }
+                
+                miniMapCtx.strokeStyle = road.color;
+                miniMapCtx.lineWidth = 2;
+                miniMapCtx.stroke();
+            }
+            
+            // Draw obstacles on minimap
+            for (const obstacle of obstacles) {
+                miniMapCtx.beginPath();
+                miniMapCtx.arc(obstacle.x * scale, obstacle.y * scale, Math.max(2, obstacle.radius * scale * 0.3), 0, Math.PI * 2);
+                miniMapCtx.fillStyle = obstacle.color;
+                miniMapCtx.fill();
+            }
+            
+            // Draw other players on minimap
+            for (const other of otherPlayers) {
+                miniMapCtx.beginPath();
+                miniMapCtx.arc(other.x * scale, other.y * scale, 3, 0, Math.PI * 2);
+                miniMapCtx.fillStyle = other.color;
+                miniMapCtx.fill();
+            }
+            
+            // Draw player on minimap
+            miniMapCtx.beginPath();
+            miniMapCtx.arc(player.x * scale, player.y * scale, 4, 0, Math.PI * 2);
+            miniMapCtx.fillStyle = "#FFFFFF";
+            miniMapCtx.fill();
+            
+            // Draw viewport rectangle
+            const viewportWidth = canvas.width * scale;
+            const viewportHeight = canvas.height * scale;
+            const viewportX = (player.x - canvas.width / 2) * scale;
+            const viewportY = (player.y - canvas.height / 2) * scale;
+            
+            miniMapCtx.strokeStyle = "#4cc9f0";
+            miniMapCtx.lineWidth = 2;
+            miniMapCtx.strokeRect(viewportX, viewportY, viewportWidth, viewportHeight);
+        }
+        
+        // Generate initial road
+        function generateInitialRoad() {
+            roads.push({
+                points: [
+                    {x: player.x - 100, y: player.y},
+                    {x: player.x, y: player.y}
+                ],
+                color: player.color,
+                width: player.roadWidth
+            });
+            
+            roadLength = 100;
+        }
+        
+        // Generate obstacles
+        function generateObstacles(count) {
+            for (let i = 0; i < count; i++) {
+                obstacles.push({
+                    x: Math.random() * gameSettings.worldWidth,
+                    y: Math.random() * gameSettings.worldHeight,
+                    radius: 20 + Math.random() * 30,
+                    color: getRandomObstacleColor()
+                });
+            }
+        }
+        
+        // Generate coins
+        function generateCoins(count) {
+            for (let i = 0; i < count; i++) {
+                generateCoin();
+            }
+        }
+        
+        // Generate a single coin
+        function generateCoin(x, y) {
+            if (x === undefined || y === undefined) {
+                // Generate random position
+                x = Math.random() * gameSettings.worldWidth;
+                y = Math.random() * gameSettings.worldHeight;
+                
+                // Make sure coin is not too close to player
+                const dx = x - player.x;
+                const dy = y - player.y;
+                if (Math.sqrt(dx * dx + dy * dy) < 200) {
+                    // Try again
+                    return generateCoin();
+                }
+            }
+            
+            coinsOnMap.push({
+                x: x,
+                y: y,
+                radius: 8 + Math.random() * 4
+            });
+        }
+        
+        // Generate other players (simulated)
+        function generateOtherPlayers(count) {
+            for (let i = 0; i < count; i++) {
+                otherPlayers.push({
+                    x: Math.random() * gameSettings.worldWidth,
+                    y: Math.random() * gameSettings.worldHeight,
+                    radius: 12 + Math.random() * 6,
+                    speed: 1.5 + Math.random() * 1.5,
+                    color: getRandomColor(),
+                    direction: Math.random() * Math.PI * 2,
+                    name: getRandomPlayerName(),
+                    roadPoints: []
+                });
+            }
+        }
+        
+        // Create particles
+        function createParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 2;
+                const life = 20 + Math.random() * 30;
+                
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: 2 + Math.random() * 3,
+                    color: color,
+                    life: life,
+                    maxLife: life
+                });
+            }
+        }
+        
+        // Buy an upgrade
+        function buyUpgrade(type) {
+            const upgrade = upgrades[type];
+            
+            if (coins >= upgrade.cost) {
+                coins -= upgrade.cost;
+                
+                // Apply upgrade
+                upgrade.level++;
+                
+                if (type === 'speed') {
+                    player.speed += upgrade.value;
+                    showNotification(`Speed increased to ${player.speed.toFixed(1)}`, "#4cc9f0");
+                } else if (type === 'roadWidth') {
+                    player.roadWidth += upgrade.value;
+                    showNotification(`Road width increased to ${player.roadWidth.toFixed(1)}`, "#4cc9f0");
+                } else if (type === 'coinMultiplier') {
+                    gameSettings.coinMultiplier += upgrade.value;
+                    showNotification(`Coin multiplier increased to ${gameSettings.coinMultiplier.toFixed(1)}x`, "#4cc9f0");
+                }
+                
+                // Increase cost for next level
+                upgrade.cost = Math.floor(upgrade.cost * 1.5);
+                
+                // Update UI
+                updateUI();
+                updateUpgradeButtons();
+            } else {
+                showNotification(`Not enough coins! Need ${upgrade.cost}`, "#f72585");
+            }
+        }
+        
+        // Update UI elements
+        function updateUI() {
+            document.getElementById('score').textContent = Math.floor(score);
+            document.getElementById('roadLength').textContent = Math.floor(roadLength);
+            document.getElementById('coins').textContent = Math.floor(coins);
+            
+            // Update upgrade levels
+            document.getElementById('speedLevel').textContent = upgrades.speed.level;
+            document.getElementById('widthLevel').textContent = upgrades.roadWidth.level;
+            document.getElementById('multiplierLevel').textContent = upgrades.coinMultiplier.level;
+            
+            // Update upgrade costs
+            document.querySelector('#upgradeSpeed .upgrade-cost').textContent = `${upgrades.speed.cost} coins`;
+            document.querySelector('#upgradeRoadWidth .upgrade-cost').textContent = `${upgrades.roadWidth.cost} coins`;
+            document.querySelector('#upgradeCoinMultiplier .upgrade-cost').textContent = `${upgrades.coinMultiplier.cost} coins`;
+            
+            // Update leaderboard with current player score
+            const playerEntry = leaderboard.find(entry => entry.name === "You");
+            if (playerEntry) {
+                playerEntry.score = score;
+                playerEntry.color = player.color;
+                updateLeaderboard();
+            }
+        }
+        
+        // Update upgrade buttons enabled/disabled state
+        function updateUpgradeButtons() {
+            const speedUpgrade = document.getElementById('upgradeSpeed');
+            const widthUpgrade = document.getElementById('upgradeRoadWidth');
+            const multiplierUpgrade = document.getElementById('upgradeCoinMultiplier');
+            
+            speedUpgrade.classList.toggle('disabled', coins < upgrades.speed.cost);
+            widthUpgrade.classList.toggle('disabled', coins < upgrades.roadWidth.cost);
+            multiplierUpgrade.classList.toggle('disabled', coins < upgrades.coinMultiplier.cost);
+        }
+        
+        // Update leaderboard display
+        function updateLeaderboard() {
+            // Sort leaderboard by score (descending)
+            leaderboard.sort((a, b) => b.score - a.score);
+            
+            // Update leaderboard UI
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+            
+            for (let i = 0; i < Math.min(leaderboard.length, 7); i++) {
+                const player = leaderboard[i];
+                const item = document.createElement('div');
+                item.className = `leaderboard-item ${player.name === "You" ? "you" : ""}`;
+                item.innerHTML = `
+                    <div class="player-rank">${i + 1}</div>
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-score">${Math.floor(player.score)}</div>
+                `;
+                leaderboardList.appendChild(item);
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, color) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = color;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+        
+        // Helper functions
+        function getRandomColor() {
+            const colors = [
+                '#4cc9f0', '#f72585', '#7209b7', '#3a86ff', 
+                '#fb5607', '#ff006e', '#8338ec', '#3a86ff',
+                '#ffbe0b', '#06d6a0', '#118ab2', '#ef476f'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function getRandomObstacleColor() {
+            const colors = [
+                '#8B4513', '#A0522D', '#CD853F', '#D2691E',
+                '#8B7355', '#A52A2A', '#800000', '#8B0000'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function getRandomPlayerName() {
+            const names = [
+                'RoadRunner', 'HighwayHero', 'AsphaltAce', 'PathPioneer',
+                'TrailTamer', 'RoadRacer', 'StreetSmasher', 'LaneLegend',
+                'PavementPro', 'FreewayFury', 'ExpressExpert', 'BoulevardBoss'
+            ];
+            return names[Math.floor(Math.random() * names.length)];
+        }
+        
+        // Initialize the game when the page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
