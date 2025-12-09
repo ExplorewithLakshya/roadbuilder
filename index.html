@@ -2,41 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoadBuilder.io - Multiplayer Road Building Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RoadBuilder.io - Perfect for Mobile & Laptop</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Reset and Base Styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: white;
             overflow: hidden;
             height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
+            touch-action: manipulation;
         }
         
+        /* Game Header */
         .game-header {
-            padding: 15px 20px;
-            background-color: rgba(0, 0, 0, 0.5);
+            padding: 12px 20px;
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #0f3460;
             z-index: 100;
+            flex-shrink: 0;
+            min-height: 60px;
+            backdrop-filter: blur(10px);
         }
         
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #4cc9f0;
         }
@@ -47,25 +60,26 @@
         
         .player-info {
             display: flex;
-            gap: 25px;
+            gap: 15px;
         }
         
         .info-box {
-            background-color: rgba(15, 52, 96, 0.7);
-            padding: 8px 15px;
+            background-color: rgba(15, 52, 96, 0.8);
+            padding: 8px 12px;
             border-radius: 8px;
-            min-width: 120px;
+            min-width: 90px;
             text-align: center;
+            border: 1px solid rgba(76, 201, 240, 0.3);
         }
         
         .info-label {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #a9b7c6;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
         
         .info-value {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #4cc9f0;
         }
@@ -74,89 +88,172 @@
             color: #f72585;
         }
         
+        /* Game Container */
         .game-container {
             display: flex;
             flex: 1;
             overflow: hidden;
+            position: relative;
         }
         
+        /* Desktop Layout */
+        @media (min-width: 1025px) {
+            .game-container {
+                flex-direction: row;
+            }
+            
+            .game-sidebar {
+                width: 300px;
+                display: flex !important;
+                flex-direction: column;
+            }
+            
+            .mobile-controls {
+                display: none !important;
+            }
+            
+            .mobile-only {
+                display: none !important;
+            }
+        }
+        
+        /* Tablet Layout */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .game-container {
+                flex-direction: row;
+            }
+            
+            .game-sidebar {
+                width: 260px;
+                display: flex !important;
+                flex-direction: column;
+            }
+            
+            .mobile-controls {
+                display: none !important;
+            }
+            
+            .mobile-only {
+                display: none !important;
+            }
+        }
+        
+        /* Mobile Layout */
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .game-sidebar {
+                width: 100%;
+                height: 200px;
+                display: flex !important;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 12px;
+                border-right: none;
+                border-bottom: 2px solid #0f3460;
+            }
+            
+            .sidebar-section {
+                min-width: 260px;
+                margin-right: 20px;
+                flex-shrink: 0;
+            }
+            
+            .mobile-controls {
+                display: flex !important;
+            }
+            
+            .desktop-only {
+                display: none !important;
+            }
+            
+            .sidebar-toggle {
+                display: none !important;
+            }
+        }
+        
+        /* Very Small Mobile */
+        @media (max-width: 480px) {
+            .game-sidebar {
+                height: 180px;
+                padding: 10px;
+            }
+            
+            .sidebar-section {
+                min-width: 240px;
+                margin-right: 15px;
+            }
+            
+            .player-info {
+                gap: 8px;
+            }
+            
+            .info-box {
+                min-width: 75px;
+                padding: 6px 8px;
+            }
+            
+            .info-value {
+                font-size: 1.1rem;
+            }
+        }
+        
+        /* Game Sidebar */
         .game-sidebar {
-            width: 280px;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-right: 2px solid #0f3460;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            border-right: 2px solid #0f3460;
-            overflow-y: auto;
         }
         
-        .game-canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        #gameCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0d1b2a;
-        }
-        
-        .mini-map {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 200px;
-            height: 150px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 2px solid #4cc9f0;
-            border-radius: 5px;
-            z-index: 50;
-            overflow: hidden;
-        }
-        
-        #miniMapCanvas {
-            width: 100%;
-            height: 100%;
+        .sidebar-section {
+            margin-bottom: 20px;
         }
         
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #4cc9f0;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
             border-bottom: 1px solid #0f3460;
         }
         
+        /* Controls */
         .controls-list {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .control-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 10px;
             background-color: rgba(15, 52, 96, 0.3);
-            border-radius: 5px;
+            border-radius: 6px;
         }
         
         .control-key {
             background-color: rgba(0, 0, 0, 0.5);
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-family: monospace;
             border: 1px solid #4cc9f0;
+            font-size: 0.9rem;
         }
         
+        /* Upgrades */
         .upgrades-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .upgrade-item {
@@ -168,11 +265,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid transparent;
         }
         
         .upgrade-item:hover {
             background-color: rgba(79, 120, 173, 0.5);
-            transform: translateY(-2px);
+            border-color: #4cc9f0;
+        }
+        
+        .upgrade-item:active {
+            transform: scale(0.98);
         }
         
         .upgrade-item.disabled {
@@ -182,228 +284,390 @@
         
         .upgrade-item.disabled:hover {
             background-color: rgba(15, 52, 96, 0.5);
-            transform: none;
+            border-color: transparent;
         }
         
         .upgrade-cost {
             color: #f72585;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.95rem;
         }
         
-        .upgrade-name {
-            font-weight: 600;
-        }
-        
-        .upgrade-level {
-            color: #a9b7c6;
-            font-size: 0.9rem;
-        }
-        
-        .leaderboard {
-            margin-top: auto;
-        }
-        
+        /* Leaderboard */
         .leaderboard-list {
-            max-height: 200px;
+            max-height: 180px;
             overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #4cc9f0 rgba(15, 52, 96, 0.3);
+        }
+        
+        .leaderboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: rgba(15, 52, 96, 0.3);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background-color: #4cc9f0;
+            border-radius: 3px;
         }
         
         .leaderboard-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 8px;
             margin-bottom: 5px;
             background-color: rgba(15, 52, 96, 0.3);
-            border-radius: 5px;
+            border-radius: 6px;
         }
         
         .leaderboard-item.you {
-            background-color: rgba(79, 120, 173, 0.5);
+            background-color: rgba(76, 201, 240, 0.2);
             border-left: 3px solid #f72585;
         }
         
-        .player-rank {
-            color: #f72585;
-            font-weight: 600;
-            width: 25px;
-        }
-        
-        .player-name {
+        /* Game Canvas */
+        .game-canvas-container {
             flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #0d1b2a;
         }
         
-        .player-score {
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        /* Mini-map */
+        .mini-map {
+            position: absolute;
+            bottom: 80px;
+            right: 15px;
+            width: 150px;
+            height: 120px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #4cc9f0;
+            border-radius: 8px;
+            z-index: 50;
+            overflow: hidden;
+            display: block !important;
+        }
+        
+        #miniMapCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Mobile Controls - ALWAYS VISIBLE ON MOBILE */
+        .mobile-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 70%, transparent 100%);
+            z-index: 60;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            touch-action: none;
+            pointer-events: auto;
+        }
+        
+        .joystick-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            touch-action: none;
+        }
+        
+        .joystick-base {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 2px solid rgba(76, 201, 240, 0.5);
+        }
+        
+        .joystick-handle {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(76, 201, 240, 0.9);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.1s;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-right: 10px;
+        }
+        
+        .action-button {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(247, 37, 133, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.1s;
+            position: relative;
+            user-select: none;
+        }
+        
+        .action-button:active {
+            transform: scale(0.95);
+            background-color: rgba(247, 37, 133, 1);
+        }
+        
+        .action-button.build {
+            background-color: rgba(76, 201, 240, 0.9);
+        }
+        
+        .action-button.build:active {
+            background-color: rgba(76, 201, 240, 1);
+        }
+        
+        .action-button.boost {
+            background-color: rgba(255, 215, 0, 0.9);
+        }
+        
+        .action-button.boost:active {
+            background-color: rgba(255, 215, 0, 1);
+        }
+        
+        .button-label {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #a9b7c6;
+            font-weight: 600;
+        }
+        
+        /* Boost Bar */
+        .boost-bar {
+            position: absolute;
+            bottom: 160px;
+            left: 15px;
+            width: 180px;
+            height: 12px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            z-index: 50;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: block !important;
+        }
+        
+        .boost-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4cc9f0, #3a86ff);
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.2s;
+        }
+        
+        .boost-text {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 0.9rem;
             color: #4cc9f0;
             font-weight: 600;
         }
         
+        /* Notification */
         .game-notification {
             position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(15, 52, 96, 0.9);
-            padding: 12px 25px;
-            border-radius: 8px;
+            background-color: rgba(15, 52, 96, 0.95);
+            padding: 12px 20px;
+            border-radius: 10px;
             font-weight: 600;
             z-index: 100;
             opacity: 0;
             transition: opacity 0.3s;
             text-align: center;
-            min-width: 300px;
+            min-width: 280px;
+            max-width: 90vw;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid #4cc9f0;
+            pointer-events: none;
         }
         
         .game-notification.show {
             opacity: 1;
         }
         
-        .road-color-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid white;
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
         }
         
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(76, 201, 240, 0.3);
+            border-top-color: #4cc9f0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: #4cc9f0;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        /* Mobile Landscape Adjustments */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .game-container {
+                flex-direction: row;
+            }
+            
+            .game-sidebar {
+                width: 280px;
+                height: 100%;
+                flex-direction: column;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+            
+            .sidebar-section {
+                min-width: auto;
+                margin-right: 0;
+            }
+            
+            .mobile-controls {
+                height: 120px;
+                padding: 15px;
+            }
+            
+            .joystick-container {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .action-button {
+                width: 70px;
+                height: 70px;
+                font-size: 1.5rem;
+            }
+            
+            .mini-map {
+                bottom: 10px;
+                width: 120px;
+                height: 90px;
+            }
+            
+            .boost-bar {
+                bottom: 140px;
+                width: 150px;
+            }
+        }
+        
+        /* High DPI Screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            canvas {
+                image-rendering: -moz-crisp-edges;
+                image-rendering: -webkit-crisp-edges;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+            }
+        }
+        
+        /* Performance Optimizations */
+        .game-canvas-container {
+            -webkit-backface-visibility: hidden;
+            -moz-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform: translate3d(0,0,0);
+            -moz-transform: translate3d(0,0,0);
+            transform: translate3d(0,0,0);
+        }
+        
+        /* Player Info Section */
         .player-road-color {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
         
+        .road-color-indicator {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
         .instructions {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #a9b7c6;
-            margin-top: 10px;
-            line-height: 1.4;
-        }
-        
-        .mobile-controls {
-            display: none;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 60;
-        }
-        
-        .mobile-joystick {
-            width: 100px;
-            height: 100px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            position: relative;
-            touch-action: none;
-        }
-        
-        .mobile-joystick-handle {
-            width: 50px;
-            height: 50px;
-            background-color: rgba(79, 120, 173, 0.8);
-            border-radius: 50%;
-            position: absolute;
-            top: 25px;
-            left: 25px;
-        }
-        
-        .mobile-buttons {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .mobile-button {
-            width: 70px;
-            height: 70px;
-            background-color: rgba(79, 120, 173, 0.8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-        
-        @media (max-width: 1024px) {
-            .game-sidebar {
-                width: 220px;
-                padding: 15px;
-            }
-            
-            .mini-map {
-                width: 150px;
-                height: 120px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .game-container {
-                flex-direction: column;
-            }
-            
-            .game-sidebar {
-                width: 100%;
-                height: 200px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                overflow-x: auto;
-                border-right: none;
-                border-bottom: 2px solid #0f3460;
-            }
-            
-            .sidebar-section {
-                min-width: 200px;
-                margin-right: 20px;
-            }
-            
-            .leaderboard {
-                margin-top: 0;
-            }
-            
-            .mobile-controls {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            
-            .player-info {
-                gap: 10px;
-            }
-            
-            .info-box {
-                min-width: 90px;
-                padding: 5px 10px;
-            }
-            
-            .info-value {
-                font-size: 1.1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .game-sidebar {
-                height: 160px;
-            }
-            
-            .sidebar-section {
-                min-width: 160px;
-            }
-            
-            .mini-map {
-                width: 100px;
-                height: 80px;
-                bottom: 120px;
-                right: 10px;
-            }
-            
-            .logo {
-                font-size: 1.4rem;
-            }
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading RoadBuilder.io...</div>
+        <div class="loading-text" style="font-size: 0.9rem; margin-top: 10px; color: #a9b7c6;">
+            <span id="loadingTip">Use WASD or arrow keys to move</span>
+        </div>
+    </div>
+    
     <div class="game-header">
         <div class="logo">
             <i class="fas fa-road"></i>
@@ -427,36 +691,55 @@
     </div>
     
     <div class="game-container">
-        <div class="game-sidebar">
+        <!-- Sidebar -->
+        <div class="game-sidebar" id="gameSidebar">
+            <!-- Player Info Section -->
             <div class="sidebar-section">
                 <div class="section-title">Player Info</div>
                 <div class="player-road-color">
                     <div class="road-color-indicator" id="playerColor"></div>
                     <div>Your Road Color</div>
                 </div>
-                <div class="instructions">
-                    Build the longest road network to earn points. Avoid obstacles and other players' roads!
+                <div class="instructions desktop-only">
+                    Use WASD/Arrows to move, SPACE to build roads, SHIFT to boost.
+                </div>
+                <div class="instructions mobile-only">
+                    Use joystick to move, buttons to build and boost.
                 </div>
             </div>
             
+            <!-- Controls Section -->
             <div class="sidebar-section">
                 <div class="section-title">Controls</div>
                 <div class="controls-list">
-                    <div class="control-item">
+                    <div class="control-item desktop-only">
                         <span>Move</span>
                         <span class="control-key">WASD / Arrows</span>
                     </div>
-                    <div class="control-item">
+                    <div class="control-item desktop-only">
                         <span>Build Road</span>
                         <span class="control-key">SPACE</span>
                     </div>
-                    <div class="control-item">
+                    <div class="control-item desktop-only">
                         <span>Boost</span>
                         <span class="control-key">SHIFT</span>
+                    </div>
+                    <div class="control-item mobile-only">
+                        <span>Movement</span>
+                        <span class="control-key">Joystick</span>
+                    </div>
+                    <div class="control-item mobile-only">
+                        <span>Build Road</span>
+                        <span class="control-key">Blue Button</span>
+                    </div>
+                    <div class="control-item mobile-only">
+                        <span>Speed Boost</span>
+                        <span class="control-key">Yellow Button</span>
                     </div>
                 </div>
             </div>
             
+            <!-- Upgrades Section -->
             <div class="sidebar-section">
                 <div class="section-title">Upgrades</div>
                 <div class="upgrades-list">
@@ -484,7 +767,8 @@
                 </div>
             </div>
             
-            <div class="sidebar-section leaderboard">
+            <!-- Leaderboard Section -->
+            <div class="sidebar-section">
                 <div class="section-title">Leaderboard</div>
                 <div class="leaderboard-list" id="leaderboardList">
                     <!-- Leaderboard items will be added here -->
@@ -492,26 +776,41 @@
             </div>
         </div>
         
+        <!-- Game Canvas -->
         <div class="game-canvas-container">
             <canvas id="gameCanvas"></canvas>
+            
+            <!-- Boost Bar -->
+            <div class="boost-bar">
+                <div class="boost-text">BOOST</div>
+                <div class="boost-fill" id="boostFill"></div>
+            </div>
+            
+            <!-- Mini-map -->
             <div class="mini-map">
                 <canvas id="miniMapCanvas"></canvas>
             </div>
             
+            <!-- Notification -->
             <div class="game-notification" id="notification">
                 Welcome to RoadBuilder.io!
             </div>
             
-            <div class="mobile-controls">
-                <div class="mobile-joystick" id="joystick">
-                    <div class="mobile-joystick-handle"></div>
+            <!-- Mobile Controls -->
+            <div class="mobile-controls" id="mobileControls">
+                <div class="joystick-container">
+                    <div class="joystick-base"></div>
+                    <div class="joystick-handle" id="joystickHandle"></div>
                 </div>
-                <div class="mobile-buttons">
-                    <div class="mobile-button" id="buildButton">
+                
+                <div class="action-buttons">
+                    <div class="action-button build" id="buildButton">
                         <i class="fas fa-road"></i>
+                        <div class="button-label">BUILD</div>
                     </div>
-                    <div class="mobile-button" id="boostButton">
+                    <div class="action-button boost" id="boostButton">
                         <i class="fas fa-bolt"></i>
+                        <div class="button-label">BOOST</div>
                     </div>
                 </div>
             </div>
@@ -519,20 +818,25 @@
     </div>
 
     <script>
+        // Device detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const screenWidth = window.innerWidth;
+        
         // Game variables
         const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { alpha: false });
         const miniMapCanvas = document.getElementById('miniMapCanvas');
-        const miniMapCtx = miniMapCanvas.getContext('2d');
+        const miniMapCtx = miniMapCanvas.getContext('2d', { alpha: false });
         
         // Game state
-        let gameRunning = true;
+        let gameRunning = false;
         let score = 0;
         let roadLength = 0;
         let coins = 100;
         let player = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
+            x: 2000,
+            y: 2000,
             radius: 15,
             speed: 3,
             roadWidth: 8,
@@ -556,7 +860,7 @@
             worldWidth: 4000,
             worldHeight: 4000,
             coinMultiplier: 1,
-            roadCost: 0.1,
+            roadCost: 0.05, // Reduced cost for mobile play
             coinValue: 1
         };
         
@@ -567,7 +871,7 @@
             coinMultiplier: { level: 1, cost: 100, value: 0.2 }
         };
         
-        // Leaderboard (simulated players)
+        // Leaderboard
         let leaderboard = [
             { name: "RoadMaster", score: 24500, color: "#ff0000" },
             { name: "HighwayKing", score: 18900, color: "#00ff00" },
@@ -580,198 +884,287 @@
         
         // Input handling
         const keys = {};
-        const mouse = { x: 0, y: 0, down: false };
+        let joystickActive = false;
+        let joystickTouchId = null;
+        let joystickCenter = { x: 0, y: 0 };
+        let joystickRadius = 50;
+        let joystickVector = { x: 0, y: 0 };
+        
+        // Performance
+        let lastRenderTime = 0;
+        const fps = 60;
+        const frameInterval = 1000 / fps;
         
         // Initialize game
-        function init() {
+        async function init() {
+            // Show loading screen
+            showLoadingTip();
+            
             // Set canvas dimensions
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
-            // Set player color indicator
+            // Set player color
             document.getElementById('playerColor').style.backgroundColor = player.color;
+            
+            // Setup event listeners
+            setupEventListeners();
             
             // Initialize game objects
             generateInitialRoad();
-            generateObstacles(30);
-            generateCoins(50);
-            generateOtherPlayers(6);
-            
-            // Set up event listeners
-            setupEventListeners();
+            generateObstacles(25);
+            generateCoins(40);
+            generateOtherPlayers(5);
             
             // Update UI
             updateUI();
             updateLeaderboard();
+            updateUpgradeButtons();
             
-            // Start game loop
-            requestAnimationFrame(gameLoop);
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    gameRunning = true;
+                    showNotification("Welcome! Build roads to earn points.", "#4cc9f0");
+                    requestAnimationFrame(gameLoop);
+                }, 500);
+            }, 1000);
         }
         
-        // Set up event listeners
+        // Show loading tip
+        function showLoadingTip() {
+            const desktopTips = [
+                "Use WASD or arrow keys to move",
+                "Press SPACE to build roads",
+                "Hold SHIFT to boost your speed",
+                "Collect coins for upgrades",
+                "Avoid obstacles to keep your score"
+            ];
+            
+            const mobileTips = [
+                "Use joystick to move",
+                "Tap BUILD button to create roads",
+                "Tap BOOST for speed burst",
+                "Collect coins for upgrades",
+                "Swipe sidebar to see more info"
+            ];
+            
+            const tips = isMobile ? mobileTips : desktopTips;
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            document.getElementById('loadingTip').textContent = randomTip;
+        }
+        
+        // Setup event listeners
         function setupEventListeners() {
-            // Keyboard controls
+            // Keyboard controls for desktop
             window.addEventListener('keydown', (e) => {
-                keys[e.key.toLowerCase()] = true;
-                
-                // Spacebar to build road
-                if (e.key === ' ' && !e.repeat) {
-                    player.isBuilding = true;
+                if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'Shift'].includes(e.key)) {
+                    e.preventDefault();
                 }
                 
-                // Prevent spacebar from scrolling page
-                if (e.key === ' ') {
-                    e.preventDefault();
+                const key = e.key.toLowerCase();
+                keys[key] = true;
+                
+                if (e.key === ' ' && !e.repeat) {
+                    player.isBuilding = true;
                 }
             });
             
             window.addEventListener('keyup', (e) => {
-                keys[e.key.toLowerCase()] = false;
+                const key = e.key.toLowerCase();
+                keys[key] = false;
                 
                 if (e.key === ' ') {
                     player.isBuilding = false;
                 }
             });
             
-            // Mouse controls
-            canvas.addEventListener('mousemove', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                mouse.x = e.clientX - rect.left;
-                mouse.y = e.clientY - rect.top;
-            });
-            
-            canvas.addEventListener('mousedown', () => {
-                mouse.down = true;
-                player.isBuilding = true;
-            });
-            
-            canvas.addEventListener('mouseup', () => {
-                mouse.down = false;
-                player.isBuilding = false;
-            });
-            
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                mouse.x = touch.clientX - rect.left;
-                mouse.y = touch.clientY - rect.top;
-                mouse.down = true;
-                player.isBuilding = true;
-            });
-            
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                mouse.x = touch.clientX - rect.left;
-                mouse.y = touch.clientY - rect.top;
-            });
-            
-            canvas.addEventListener('touchend', () => {
-                mouse.down = false;
-                player.isBuilding = false;
-            });
-            
-            // Upgrade buttons
-            document.getElementById('upgradeSpeed').addEventListener('click', () => {
-                buyUpgrade('speed');
-            });
-            
-            document.getElementById('upgradeRoadWidth').addEventListener('click', () => {
-                buyUpgrade('roadWidth');
-            });
-            
-            document.getElementById('upgradeCoinMultiplier').addEventListener('click', () => {
-                buyUpgrade('coinMultiplier');
-            });
-            
-            // Mobile controls
-            const joystick = document.getElementById('joystick');
-            const joystickHandle = joystick.querySelector('.mobile-joystick-handle');
-            const buildButton = document.getElementById('buildButton');
-            const boostButton = document.getElementById('boostButton');
-            
-            let joystickActive = false;
-            let joystickCenterX = 0;
-            let joystickCenterY = 0;
-            let joystickRadius = 50;
-            
-            joystick.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                joystickActive = true;
-                const rect = joystick.getBoundingClientRect();
-                joystickCenterX = rect.left + joystickRadius;
-                joystickCenterY = rect.top + joystickRadius;
-                updateJoystick(e.touches[0]);
-            });
-            
-            joystick.addEventListener('touchmove', (e) => {
-                if (joystickActive) {
+            // Mouse controls for desktop
+            if (!isTouchDevice) {
+                canvas.addEventListener('mousedown', (e) => {
                     e.preventDefault();
-                    updateJoystick(e.touches[0]);
-                }
-            });
-            
-            joystick.addEventListener('touchend', () => {
-                joystickActive = false;
-                joystickHandle.style.top = '25px';
-                joystickHandle.style.left = '25px';
-                keys['arrowleft'] = false;
-                keys['arrowright'] = false;
-                keys['arrowup'] = false;
-                keys['arrowdown'] = false;
-            });
-            
-            function updateJoystick(touch) {
-                const touchX = touch.clientX;
-                const touchY = touch.clientY;
+                    if (e.button === 0) {
+                        player.isBuilding = true;
+                    }
+                });
                 
-                const deltaX = touchX - joystickCenterX;
-                const deltaY = touchY - joystickCenterY;
+                canvas.addEventListener('mouseup', (e) => {
+                    if (e.button === 0) {
+                        player.isBuilding = false;
+                    }
+                });
                 
-                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-                const angle = Math.atan2(deltaY, deltaX);
-                
-                if (distance < joystickRadius) {
-                    joystickHandle.style.left = `${25 + deltaX}px`;
-                    joystickHandle.style.top = `${25 + deltaY}px`;
-                } else {
-                    const limitedX = Math.cos(angle) * joystickRadius;
-                    const limitedY = Math.sin(angle) * joystickRadius;
-                    joystickHandle.style.left = `${25 + limitedX}px`;
-                    joystickHandle.style.top = `${25 + limitedY}px`;
-                }
-                
-                // Set direction based on joystick position
-                keys['arrowleft'] = deltaX < -15;
-                keys['arrowright'] = deltaX > 15;
-                keys['arrowup'] = deltaY < -15;
-                keys['arrowdown'] = deltaY > 15;
+                canvas.addEventListener('mouseleave', () => {
+                    player.isBuilding = false;
+                });
             }
             
-            buildButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                player.isBuilding = true;
-            });
+            // Touch controls for mobile
+            if (isTouchDevice) {
+                // Prevent default touch behaviors
+                document.addEventListener('touchmove', (e) => {
+                    if (e.target.closest('.game-canvas-container') || 
+                        e.target.closest('.mobile-controls')) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // Setup joystick
+                const joystickContainer = document.querySelector('.joystick-container');
+                const joystickHandle = document.getElementById('joystickHandle');
+                
+                joystickContainer.addEventListener('touchstart', handleJoystickStart);
+                joystickContainer.addEventListener('touchmove', handleJoystickMove);
+                joystickContainer.addEventListener('touchend', handleJoystickEnd);
+                joystickContainer.addEventListener('touchcancel', handleJoystickEnd);
+                
+                // Setup action buttons
+                const buildButton = document.getElementById('buildButton');
+                const boostButton = document.getElementById('boostButton');
+                
+                buildButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    player.isBuilding = true;
+                    buildButton.style.transform = 'scale(0.95)';
+                });
+                
+                buildButton.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    player.isBuilding = false;
+                    buildButton.style.transform = 'scale(1)';
+                });
+                
+                buildButton.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    player.isBuilding = false;
+                    buildButton.style.transform = 'scale(1)';
+                });
+                
+                boostButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    keys['shift'] = true;
+                    boostButton.style.transform = 'scale(0.95)';
+                });
+                
+                boostButton.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    keys['shift'] = false;
+                    boostButton.style.transform = 'scale(1)';
+                });
+                
+                boostButton.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    keys['shift'] = false;
+                    boostButton.style.transform = 'scale(1)';
+                });
+                
+                // Show mobile controls
+                document.getElementById('mobileControls').style.display = 'flex';
+            }
             
-            buildButton.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                player.isBuilding = false;
-            });
+            // Upgrade buttons
+            document.getElementById('upgradeSpeed').addEventListener('click', () => buyUpgrade('speed'));
+            document.getElementById('upgradeRoadWidth').addEventListener('click', () => buyUpgrade('roadWidth'));
+            document.getElementById('upgradeCoinMultiplier').addEventListener('click', () => buyUpgrade('coinMultiplier'));
             
-            boostButton.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                keys['shift'] = true;
-            });
-            
-            boostButton.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                keys['shift'] = false;
-            });
+            // Prevent zoom on mobile
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
         }
         
-        // Resize canvas to fit window
+        // Joystick handlers
+        function handleJoystickStart(e) {
+            e.preventDefault();
+            if (joystickTouchId !== null) return;
+            
+            const touch = e.touches[0];
+            joystickTouchId = touch.identifier;
+            
+            const rect = e.target.getBoundingClientRect();
+            joystickCenter.x = rect.left + rect.width / 2;
+            joystickCenter.y = rect.top + rect.height / 2;
+            
+            joystickActive = true;
+            updateJoystick(touch);
+        }
+        
+        function handleJoystickMove(e) {
+            e.preventDefault();
+            if (!joystickActive) return;
+            
+            for (let i = 0; i < e.touches.length; i++) {
+                if (e.touches[i].identifier === joystickTouchId) {
+                    updateJoystick(e.touches[i]);
+                    break;
+                }
+            }
+        }
+        
+        function handleJoystickEnd(e) {
+            e.preventDefault();
+            
+            if (e.type === 'touchend') {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    if (e.changedTouches[i].identifier === joystickTouchId) {
+                        resetJoystick();
+                        break;
+                    }
+                }
+            } else {
+                resetJoystick();
+            }
+        }
+        
+        function updateJoystick(touch) {
+            const touchX = touch.clientX;
+            const touchY = touch.clientY;
+            
+            const deltaX = touchX - joystickCenter.x;
+            const deltaY = touchY - joystickCenter.y;
+            
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            const angle = Math.atan2(deltaY, deltaX);
+            
+            let joystickX = deltaX;
+            let joystickY = deltaY;
+            
+            if (distance > joystickRadius) {
+                joystickX = Math.cos(angle) * joystickRadius;
+                joystickY = Math.sin(angle) * joystickRadius;
+            }
+            
+            // Update joystick handle
+            const joystickHandle = document.getElementById('joystickHandle');
+            joystickHandle.style.transform = `translate(calc(-50% + ${joystickX}px), calc(-50% + ${joystickY}px))`;
+            
+            // Calculate joystick vector
+            joystickVector.x = joystickX / joystickRadius;
+            joystickVector.y = joystickY / joystickRadius;
+            
+            // Update movement
+            keys['arrowleft'] = joystickVector.x < -0.1;
+            keys['arrowright'] = joystickVector.x > 0.1;
+            keys['arrowup'] = joystickVector.y < -0.1;
+            keys['arrowdown'] = joystickVector.y > 0.1;
+        }
+        
+        function resetJoystick() {
+            joystickActive = false;
+            joystickTouchId = null;
+            joystickVector.x = 0;
+            joystickVector.y = 0;
+            
+            const joystickHandle = document.getElementById('joystickHandle');
+            joystickHandle.style.transform = 'translate(-50%, -50%)';
+            
+            keys['arrowleft'] = false;
+            keys['arrowright'] = false;
+            keys['arrowup'] = false;
+            keys['arrowdown'] = false;
+        }
+        
+        // Resize canvas
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
@@ -781,71 +1174,81 @@
         }
         
         // Game loop
-        function gameLoop() {
+        function gameLoop(timestamp) {
             if (!gameRunning) return;
             
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const deltaTime = timestamp - lastRenderTime;
             
-            // Calculate camera position (centered on player)
-            const cameraX = player.x - canvas.width / 2;
-            const cameraY = player.y - canvas.height / 2;
+            if (deltaTime >= frameInterval) {
+                lastRenderTime = timestamp - (deltaTime % frameInterval);
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculate camera
+                const cameraX = player.x - canvas.width / 2;
+                const cameraY = player.y - canvas.height / 2;
+                
+                // Handle input
+                handleInput();
+                
+                // Update game state
+                updatePlayer();
+                updateCoins();
+                updateOtherPlayers();
+                updateParticles();
+                
+                // Draw everything
+                drawRoads(cameraX, cameraY);
+                drawObstacles(cameraX, cameraY);
+                drawCoins(cameraX, cameraY);
+                drawOtherPlayers(cameraX, cameraY);
+                drawParticles(cameraX, cameraY);
+                drawPlayer(cameraX, cameraY);
+                
+                // Draw minimap
+                drawMiniMap();
+                
+                // Update UI
+                updateUI();
+            }
             
-            // Handle input
-            handleInput();
-            
-            // Update player
-            updatePlayer();
-            
-            // Update game objects
-            updateRoads();
-            updateCoins();
-            updateObstacles();
-            updateOtherPlayers();
-            updateParticles();
-            
-            // Draw game objects
-            drawRoads(cameraX, cameraY);
-            drawObstacles(cameraX, cameraY);
-            drawCoins(cameraX, cameraY);
-            drawOtherPlayers(cameraX, cameraY);
-            drawParticles(cameraX, cameraY);
-            drawPlayer(cameraX, cameraY);
-            
-            // Draw minimap
-            drawMiniMap();
-            
-            // Update UI
-            updateUI();
-            
-            // Continue game loop
             requestAnimationFrame(gameLoop);
         }
         
-        // Handle player input
+        // Handle input
         function handleInput() {
-            // Movement
             let moveX = 0;
             let moveY = 0;
             
+            // Keyboard controls
             if (keys['w'] || keys['arrowup']) moveY -= 1;
             if (keys['s'] || keys['arrowdown']) moveY += 1;
             if (keys['a'] || keys['arrowleft']) moveX -= 1;
             if (keys['d'] || keys['arrowright']) moveX += 1;
             
+            // Joystick controls (overrides keyboard)
+            if (joystickActive) {
+                moveX = joystickVector.x;
+                moveY = joystickVector.y;
+                
+                // Apply deadzone
+                if (Math.abs(moveX) < 0.1) moveX = 0;
+                if (Math.abs(moveY) < 0.1) moveY = 0;
+            }
+            
             // Normalize diagonal movement
             if (moveX !== 0 && moveY !== 0) {
-                moveX *= 0.7071; // 1 / sqrt(2)
+                moveX *= 0.7071;
                 moveY *= 0.7071;
             }
             
-            // Apply boost if shift is pressed and boost is available
+            // Apply boost
             let currentSpeed = player.speed;
             if ((keys['shift'] || keys['shiftright']) && player.boostCharge > 0) {
                 currentSpeed *= 1.8;
                 player.boostCharge = Math.max(0, player.boostCharge - 1.5);
                 
-                // Create boost particles
                 if (Math.random() < 0.3) {
                     createParticles(player.x, player.y, player.color, 2);
                 }
@@ -853,19 +1256,20 @@
                 player.boostCharge = Math.min(player.maxBoost, player.boostCharge + 0.5);
             }
             
+            // Update player position
             player.x += moveX * currentSpeed;
             player.y += moveY * currentSpeed;
             
-            // Keep player within world bounds
+            // Keep in bounds
             player.x = Math.max(player.radius, Math.min(gameSettings.worldWidth - player.radius, player.x));
             player.y = Math.max(player.radius, Math.min(gameSettings.worldHeight - player.radius, player.y));
             
-            // Update direction based on movement
+            // Update direction
             if (moveX !== 0 || moveY !== 0) {
                 player.direction = Math.atan2(moveY, moveX);
             }
             
-            // Build road if building
+            // Build road
             if (player.isBuilding && coins >= gameSettings.roadCost) {
                 addRoadSegment();
                 coins -= gameSettings.roadCost;
@@ -881,35 +1285,19 @@
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < player.radius + obstacle.radius) {
-                    // Push player away from obstacle
                     const angle = Math.atan2(dy, dx);
                     player.x += Math.cos(angle) * 2;
                     player.y += Math.sin(angle) * 2;
                     
-                    // Reduce score
                     score = Math.max(0, score - 5);
-                    showNotification("Hit an obstacle! -5 points", "#f72585");
-                }
-            }
-            
-            // Check collision with other players
-            for (const other of otherPlayers) {
-                const dx = player.x - other.x;
-                const dy = player.y - other.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance < player.radius + other.radius) {
-                    // Push players apart
-                    const angle = Math.atan2(dy, dx);
-                    player.x += Math.cos(angle) * 1.5;
-                    player.y += Math.sin(angle) * 1.5;
+                    showNotification("Hit obstacle! -5 points", "#f72585");
+                    createParticles(player.x, player.y, obstacle.color, 3);
                 }
             }
         }
         
-        // Add a road segment at player's position
+        // Add road segment
         function addRoadSegment() {
-            // Check if we should start a new road or continue existing one
             if (roads.length === 0) {
                 roads.push({
                     points: [{x: player.x, y: player.y}],
@@ -920,7 +1308,6 @@
                 const lastRoad = roads[roads.length - 1];
                 const lastPoint = lastRoad.points[lastRoad.points.length - 1];
                 
-                // Only add point if we've moved enough distance
                 const dx = player.x - lastPoint.x;
                 const dy = player.y - lastPoint.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
@@ -928,16 +1315,12 @@
                 if (distance > 5) {
                     lastRoad.points.push({x: player.x, y: player.y});
                     roadLength += distance;
-                    
-                    // Increase score for building road
                     score += Math.floor(distance * 0.1);
                     
-                    // Check if we should create a coin
                     if (Math.random() < 0.02) {
                         generateCoin(player.x, player.y);
                     }
                     
-                    // Create road building particles
                     if (Math.random() < 0.1) {
                         createParticles(player.x, player.y, player.color, 1);
                     }
@@ -945,58 +1328,39 @@
             }
         }
         
-        // Update roads
-        function updateRoads() {
-            // Nothing to update for roads currently
-        }
-        
         // Update coins
         function updateCoins() {
             for (let i = coinsOnMap.length - 1; i >= 0; i--) {
                 const coin = coinsOnMap[i];
                 
-                // Check collision with player
                 const dx = player.x - coin.x;
                 const dy = player.y - coin.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < player.radius + coin.radius) {
-                    // Collect coin
                     const coinValue = gameSettings.coinValue * gameSettings.coinMultiplier;
                     coins += coinValue;
                     score += Math.floor(coinValue * 10);
                     
-                    // Show coin collection effect
                     createParticles(coin.x, coin.y, "#FFD700", 5);
-                    showNotification(`+${coinValue} coins`, "#FFD700");
+                    showNotification(`+${coinValue.toFixed(1)} coins`, "#FFD700");
                     
-                    // Remove coin
                     coinsOnMap.splice(i, 1);
-                    
-                    // Generate new coin somewhere else
                     generateCoin();
                 }
             }
         }
         
-        // Update obstacles
-        function updateObstacles() {
-            // Obstacles don't move in this version
-        }
-        
-        // Update other players (simulated)
+        // Update other players
         function updateOtherPlayers() {
             for (const other of otherPlayers) {
-                // Simple AI: move in random direction, occasionally change
                 if (Math.random() < 0.02) {
                     other.direction = Math.random() * Math.PI * 2;
                 }
                 
-                // Move
                 other.x += Math.cos(other.direction) * other.speed;
                 other.y += Math.sin(other.direction) * other.speed;
                 
-                // Bounce off world edges
                 if (other.x < other.radius || other.x > gameSettings.worldWidth - other.radius) {
                     other.direction = Math.PI - other.direction;
                 }
@@ -1004,12 +1368,9 @@
                     other.direction = -other.direction;
                 }
                 
-                // Occasionally build road
                 if (Math.random() < 0.1) {
-                    // Simulate road building for other players
                     other.roadPoints.push({x: other.x, y: other.y});
                     
-                    // Limit road points
                     if (other.roadPoints.length > 50) {
                         other.roadPoints.shift();
                     }
@@ -1033,7 +1394,6 @@
         
         // Draw roads
         function drawRoads(cameraX, cameraY) {
-            // Draw all roads
             for (const road of roads) {
                 if (road.points.length < 2) continue;
                 
@@ -1051,7 +1411,6 @@
                 ctx.stroke();
             }
             
-            // Draw other players' roads
             for (const other of otherPlayers) {
                 if (other.roadPoints.length < 2) continue;
                 
@@ -1062,7 +1421,7 @@
                     ctx.lineTo(other.roadPoints[i].x - cameraX, other.roadPoints[i].y - cameraY);
                 }
                 
-                ctx.strokeStyle = other.color + "80"; // Add transparency
+                ctx.strokeStyle = other.color + "80";
                 ctx.lineWidth = 6;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
@@ -1078,7 +1437,6 @@
                 ctx.fillStyle = obstacle.color;
                 ctx.fill();
                 
-                // Draw obstacle pattern
                 ctx.beginPath();
                 ctx.arc(obstacle.x - cameraX, obstacle.y - cameraY, obstacle.radius * 0.7, 0, Math.PI * 2);
                 ctx.strokeStyle = "#000000";
@@ -1090,26 +1448,22 @@
         // Draw coins
         function drawCoins(cameraX, cameraY) {
             for (const coin of coinsOnMap) {
-                // Draw coin
                 ctx.beginPath();
                 ctx.arc(coin.x - cameraX, coin.y - cameraY, coin.radius, 0, Math.PI * 2);
                 ctx.fillStyle = "#FFD700";
                 ctx.fill();
                 
-                // Draw coin shine
                 ctx.beginPath();
                 ctx.arc(coin.x - cameraX - coin.radius * 0.3, coin.y - cameraY - coin.radius * 0.3, coin.radius * 0.4, 0, Math.PI * 2);
                 ctx.fillStyle = "#FFF8DC";
                 ctx.fill();
                 
-                // Draw coin symbol
                 ctx.fillStyle = "#B8860B";
                 ctx.font = `${coin.radius * 1.2}px Arial`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText("$", coin.x - cameraX, coin.y - cameraY);
                 
-                // Animation: floating effect
                 coin.y += Math.sin(Date.now() * 0.003 + coin.x) * 0.1;
             }
         }
@@ -1117,20 +1471,17 @@
         // Draw other players
         function drawOtherPlayers(cameraX, cameraY) {
             for (const other of otherPlayers) {
-                // Draw player circle
                 ctx.beginPath();
                 ctx.arc(other.x - cameraX, other.y - cameraY, other.radius, 0, Math.PI * 2);
                 ctx.fillStyle = other.color;
                 ctx.fill();
                 
-                // Draw player outline
                 ctx.beginPath();
                 ctx.arc(other.x - cameraX, other.y - cameraY, other.radius, 0, Math.PI * 2);
                 ctx.strokeStyle = "#FFFFFF";
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 
-                // Draw player direction indicator
                 ctx.beginPath();
                 ctx.moveTo(other.x - cameraX, other.y - cameraY);
                 ctx.lineTo(
@@ -1140,12 +1491,6 @@
                 ctx.strokeStyle = "#FFFFFF";
                 ctx.lineWidth = 3;
                 ctx.stroke();
-                
-                // Draw player name
-                ctx.fillStyle = "#FFFFFF";
-                ctx.font = "12px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText(other.name, other.x - cameraX, other.y - cameraY - other.radius - 10);
             }
         }
         
@@ -1163,20 +1508,17 @@
         
         // Draw player
         function drawPlayer(cameraX, cameraY) {
-            // Draw player circle
             ctx.beginPath();
             ctx.arc(player.x - cameraX, player.y - cameraY, player.radius, 0, Math.PI * 2);
             ctx.fillStyle = player.color;
             ctx.fill();
             
-            // Draw player outline
             ctx.beginPath();
             ctx.arc(player.x - cameraX, player.y - cameraY, player.radius, 0, Math.PI * 2);
             ctx.strokeStyle = "#FFFFFF";
             ctx.lineWidth = 3;
             ctx.stroke();
             
-            // Draw player direction indicator
             ctx.beginPath();
             ctx.moveTo(player.x - cameraX, player.y - cameraY);
             ctx.lineTo(
@@ -1187,29 +1529,6 @@
             ctx.lineWidth = 4;
             ctx.stroke();
             
-            // Draw boost indicator
-            if (player.boostCharge < player.maxBoost) {
-                const boostWidth = 60;
-                const boostHeight = 8;
-                const boostX = player.x - cameraX - boostWidth / 2;
-                const boostY = player.y - cameraY + player.radius + 15;
-                
-                // Boost background
-                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-                ctx.fillRect(boostX, boostY, boostWidth, boostHeight);
-                
-                // Boost fill
-                const fillWidth = (player.boostCharge / player.maxBoost) * boostWidth;
-                ctx.fillStyle = player.boostCharge > 30 ? "#4cc9f0" : "#f72585";
-                ctx.fillRect(boostX, boostY, fillWidth, boostHeight);
-                
-                // Boost border
-                ctx.strokeStyle = "#FFFFFF";
-                ctx.lineWidth = 1;
-                ctx.strokeRect(boostX, boostY, boostWidth, boostHeight);
-            }
-            
-            // Draw building indicator
             if (player.isBuilding) {
                 ctx.beginPath();
                 ctx.arc(player.x - cameraX, player.y - cameraY, player.radius + 5, 0, Math.PI * 2);
@@ -1224,16 +1543,14 @@
             const width = miniMapCanvas.width;
             const height = miniMapCanvas.height;
             
-            // Clear minimap
             miniMapCtx.fillStyle = "rgba(13, 27, 42, 0.9)";
             miniMapCtx.fillRect(0, 0, width, height);
             
-            // Calculate scale
             const scaleX = width / gameSettings.worldWidth;
             const scaleY = height / gameSettings.worldHeight;
             const scale = Math.min(scaleX, scaleY);
             
-            // Draw roads on minimap
+            // Draw roads
             for (const road of roads) {
                 if (road.points.length < 2) continue;
                 
@@ -1249,7 +1566,7 @@
                 miniMapCtx.stroke();
             }
             
-            // Draw obstacles on minimap
+            // Draw obstacles
             for (const obstacle of obstacles) {
                 miniMapCtx.beginPath();
                 miniMapCtx.arc(obstacle.x * scale, obstacle.y * scale, Math.max(2, obstacle.radius * scale * 0.3), 0, Math.PI * 2);
@@ -1257,7 +1574,7 @@
                 miniMapCtx.fill();
             }
             
-            // Draw other players on minimap
+            // Draw other players
             for (const other of otherPlayers) {
                 miniMapCtx.beginPath();
                 miniMapCtx.arc(other.x * scale, other.y * scale, 3, 0, Math.PI * 2);
@@ -1265,13 +1582,13 @@
                 miniMapCtx.fill();
             }
             
-            // Draw player on minimap
+            // Draw player
             miniMapCtx.beginPath();
             miniMapCtx.arc(player.x * scale, player.y * scale, 4, 0, Math.PI * 2);
             miniMapCtx.fillStyle = "#FFFFFF";
             miniMapCtx.fill();
             
-            // Draw viewport rectangle
+            // Draw viewport
             const viewportWidth = canvas.width * scale;
             const viewportHeight = canvas.height * scale;
             const viewportX = (player.x - canvas.width / 2) * scale;
@@ -1318,15 +1635,12 @@
         // Generate a single coin
         function generateCoin(x, y) {
             if (x === undefined || y === undefined) {
-                // Generate random position
                 x = Math.random() * gameSettings.worldWidth;
                 y = Math.random() * gameSettings.worldHeight;
                 
-                // Make sure coin is not too close to player
                 const dx = x - player.x;
                 const dy = y - player.y;
                 if (Math.sqrt(dx * dx + dy * dy) < 200) {
-                    // Try again
                     return generateCoin();
                 }
             }
@@ -1338,7 +1652,7 @@
             });
         }
         
-        // Generate other players (simulated)
+        // Generate other players
         function generateOtherPlayers(count) {
             for (let i = 0; i < count; i++) {
                 otherPlayers.push({
@@ -1374,14 +1688,12 @@
             }
         }
         
-        // Buy an upgrade
+        // Buy upgrade
         function buyUpgrade(type) {
             const upgrade = upgrades[type];
             
             if (coins >= upgrade.cost) {
                 coins -= upgrade.cost;
-                
-                // Apply upgrade
                 upgrade.level++;
                 
                 if (type === 'speed') {
@@ -1395,22 +1707,23 @@
                     showNotification(`Coin multiplier increased to ${gameSettings.coinMultiplier.toFixed(1)}x`, "#4cc9f0");
                 }
                 
-                // Increase cost for next level
                 upgrade.cost = Math.floor(upgrade.cost * 1.5);
-                
-                // Update UI
                 updateUI();
                 updateUpgradeButtons();
             } else {
-                showNotification(`Not enough coins! Need ${upgrade.cost}`, "#f72585");
+                showNotification(`Need ${upgrade.cost} coins!`, "#f72585");
             }
         }
         
-        // Update UI elements
+        // Update UI
         function updateUI() {
             document.getElementById('score').textContent = Math.floor(score);
             document.getElementById('roadLength').textContent = Math.floor(roadLength);
             document.getElementById('coins').textContent = Math.floor(coins);
+            
+            // Update boost bar
+            const boostFill = document.getElementById('boostFill');
+            boostFill.style.width = `${(player.boostCharge / player.maxBoost) * 100}%`;
             
             // Update upgrade levels
             document.getElementById('speedLevel').textContent = upgrades.speed.level;
@@ -1422,7 +1735,7 @@
             document.querySelector('#upgradeRoadWidth .upgrade-cost').textContent = `${upgrades.roadWidth.cost} coins`;
             document.querySelector('#upgradeCoinMultiplier .upgrade-cost').textContent = `${upgrades.coinMultiplier.cost} coins`;
             
-            // Update leaderboard with current player score
+            // Update leaderboard
             const playerEntry = leaderboard.find(entry => entry.name === "You");
             if (playerEntry) {
                 playerEntry.score = score;
@@ -1431,7 +1744,7 @@
             }
         }
         
-        // Update upgrade buttons enabled/disabled state
+        // Update upgrade buttons
         function updateUpgradeButtons() {
             const speedUpgrade = document.getElementById('upgradeSpeed');
             const widthUpgrade = document.getElementById('upgradeRoadWidth');
@@ -1442,12 +1755,10 @@
             multiplierUpgrade.classList.toggle('disabled', coins < upgrades.coinMultiplier.cost);
         }
         
-        // Update leaderboard display
+        // Update leaderboard
         function updateLeaderboard() {
-            // Sort leaderboard by score (descending)
             leaderboard.sort((a, b) => b.score - a.score);
             
-            // Update leaderboard UI
             const leaderboardList = document.getElementById('leaderboardList');
             leaderboardList.innerHTML = '';
             
@@ -1480,7 +1791,6 @@
         function getRandomColor() {
             const colors = [
                 '#4cc9f0', '#f72585', '#7209b7', '#3a86ff', 
-                '#fb5607', '#ff006e', '#8338ec', '#3a86ff',
                 '#ffbe0b', '#06d6a0', '#118ab2', '#ef476f'
             ];
             return colors[Math.floor(Math.random() * colors.length)];
@@ -1489,7 +1799,7 @@
         function getRandomObstacleColor() {
             const colors = [
                 '#8B4513', '#A0522D', '#CD853F', '#D2691E',
-                '#8B7355', '#A52A2A', '#800000', '#8B0000'
+                '#A52A2A', '#800000', '#8B0000'
             ];
             return colors[Math.floor(Math.random() * colors.length)];
         }
@@ -1497,14 +1807,22 @@
         function getRandomPlayerName() {
             const names = [
                 'RoadRunner', 'HighwayHero', 'AsphaltAce', 'PathPioneer',
-                'TrailTamer', 'RoadRacer', 'StreetSmasher', 'LaneLegend',
-                'PavementPro', 'FreewayFury', 'ExpressExpert', 'BoulevardBoss'
+                'TrailTamer', 'RoadRacer', 'StreetSmasher', 'LaneLegend'
             ];
             return names[Math.floor(Math.random() * names.length)];
         }
         
-        // Initialize the game when the page loads
+        // Initialize game
         window.onload = init;
+        
+        // Handle page visibility
+        document.addEventListener('visibilitychange', () => {
+            gameRunning = !document.hidden;
+            if (gameRunning) {
+                lastRenderTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }
+        });
     </script>
 </body>
 </html>
